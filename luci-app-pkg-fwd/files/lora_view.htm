@@ -1,0 +1,14 @@
+<%+cbi/valueheader%>
+<style type="text/css">
+    #dummy {
+        text-align: left;
+        text-transform: uppercase;
+    }
+</style>
+<label id="dummy" class="cbi-value-title">
+<%
+        local val = self:cfgvalue(section) or self.default or ""
+        write(pcdata(val))
+%>
+</label>
+<%+cbi/valuefooter%>
