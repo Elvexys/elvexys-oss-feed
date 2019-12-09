@@ -8,13 +8,13 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=packet-forwarder
-PKG_VERSION:=3.1.0
+PKG_VERSION:=3.1.0-wifx
 PKG_RELEASE:=3
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/packet_forwarder-$(PKG_VERSION)
 PKG_SOURCE:=v$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://github.com/Wifx/packet_forwarder/archive/
-PKG_MD5SUM:=e85158d463c6d240f6433f2cd9beb5e3
+PKG_MD5SUM:=955fe6070481470211c62a53d593ef9f
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -48,7 +48,7 @@ endef
 CFLAGS += $(FPIC) -O2 -Wall -Wextra -std=c99 -Iinc -I. -lm
 
 define Build/Compile
-	$(MAKE) CC=$(TARGET_CC) LGW_PATH=$(BUILD_DIR)/lora_gateway-4.1.3/libloragw -C $(PKG_BUILD_DIR)
+	$(MAKE) CC=$(TARGET_CC) LGW_PATH=$(BUILD_DIR)/lora_gateway-4.1.3-wifx/libloragw -C $(PKG_BUILD_DIR)
 endef
 
 define Package/packet-forwarder/install

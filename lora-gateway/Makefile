@@ -8,13 +8,13 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=lora-gateway
-PKG_VERSION:=4.1.3
+PKG_VERSION:=4.1.3-wifx
 PKG_RELEASE:=1
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/lora_gateway-$(PKG_VERSION)
-PKG_SOURCE:=$(PKG_VERSION).tar.gz
+PKG_SOURCE:=v$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://github.com/Wifx/lora_gateway/archive/
-PKG_MD5SUM:=8cda8f8f4f292bc81f92bd80c4a7405d
+PKG_MD5SUM:=da3a94dc0ef8ea251fe850514255bea0
 
 include $(INCLUDE_DIR)/package.mk
 
