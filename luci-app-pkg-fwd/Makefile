@@ -27,7 +27,7 @@ endef
 
 define Package/luci-app-pkt-fwd/install
 	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/controller/lora
-	$(INSTALL_DATA) ./files/lora_controller.lua $(1)/usr/lib/lua/luci/controller/lora/lora.lua
+	$(INSTALL_DATA) ./files/lora_controller.lua $(1)/usr/lib/lua/luci/controller/lora/lora-pkt-fwd.lua
 	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/model/cbi/lora
 	$(INSTALL_DATA) ./files/lora_model.lua $(1)/usr/lib/lua/luci/model/cbi/lora/lora_gateway.lua
 	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/view/lora
