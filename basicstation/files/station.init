@@ -62,31 +62,31 @@ generate_conf()
 	uci commit
 
 	logger "Apply station configuration ... "
-    
+
 	# Get antenna type
-    ANT=$(uci get station.global.antenna)
-    
-    # Find configuration file depending frequency and antenna
-    if [ -e /etc/station/station_"$FREQ"_"$ANT".conf ]; 
-    then
-        cp -f /etc/station/station_"$FREQ"_"$ANT".conf /etc/station/station.conf
-    else
-        logger "Unable to find configuration file for $ANT / $FREQ"
-    fi
-    
-    # Get LNS URI
-    LNA_URI=$(uci get station.tc.uri)
-    # GET LNS Port
-    LNA_PORT=$(uci get station.tc.port)
-    
-    if [ -z $LNA_URI ] || [ -z $LNA_PORT ]; 
-    then
-        logger "Basic station not configured, do not start it"
-        exit 1
-    else
-        echo "$LNA_URI":"$LNA_PORT" > /etc/station/tc.uri
-        # Auth file are managed by LuCi app
-    fi
+	ANT=$(uci get station.global.antenna)
+
+	# Find configuration file depending frequency and antenna
+	if [ -e /etc/station/station_"$FREQ"_"$ANT".conf ];
+	then
+		cp -f /etc/station/station_"$FREQ"_"$ANT".conf /etc/station/station.conf
+	else
+		logger "Unable to find configuration file for $ANT / $FREQ"
+	fi
+
+	# Get LNS URI
+	LNA_URI=$(uci get station.tc.uri)
+	# GET LNS Port
+	LNA_PORT=$(uci get station.tc.port)
+
+	if [ -z $LNA_URI ] || [ -z $LNA_PORT ];
+	then
+		logger "Basic station not configured, do not start it"
+		exit 1
+	else
+		echo "$LNA_URI":"$LNA_PORT" > /etc/station/tc.uri
+		# Auth file are managed by LuCi app
+	fi
 }
 
 service_triggers()
@@ -108,9 +108,9 @@ start_service()
 {
 
 	logger "Basicstation: Start"
-    
+
 	set_gateway_ID
-    
+
 	generate_conf
 
 	logger "Reset SX1301"
@@ -129,6 +129,6 @@ start_service()
 }
 
 stop_service() {
-    logger "Basicstation: Stop"
-    killall station 
+	logger "Basicstation: Stop"
+	killall station
 }
