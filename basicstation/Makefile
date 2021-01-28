@@ -63,6 +63,7 @@ define Package/basicstation/install
 	
 	$(INSTALL_CONF) ./files/station_EU868_2dBi_indoor.conf $(1)/etc/station
 	$(INSTALL_CONF) ./files/station_EU868_4dBi_outdoor.conf $(1)/etc/station
+	$(INSTALL_DIR) $(1)/etc/hotplug.d/net
 	$(INSTALL_BIN)  ./files/99-basic-station-net-reload $(1)/etc/hotplug.d/net/99-basic-station-net-reload
 endef
 
