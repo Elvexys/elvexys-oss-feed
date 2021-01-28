@@ -60,9 +60,18 @@ generate_global_conf()
 	uci set lora-global.global.freq_plan="$FREQ"
 	uci commit
 
+	SRV_ADDR=$(uci get lora-global.gateway_conf.server_address 2> /dev/null)
+	if [ -z $SRV_ADDR ]
+	then
+		logger "packet forwarder not configured, do not start it"
+		exit 1
+	else
+		gen_lora_global_conf
+	fi
+
 	logger "Generate /etc/lora/local_conf.json"
 	logger "Generate /etc/lora/global_conf.json"
-	gen_lora_global_conf
+
 }
 
 service_triggers()
@@ -81,12 +90,15 @@ reload_service()
 
 start_service()
 {
-	logger "Reset SX1301"
-	reset_sx1301_board
+
 
 	set_gateway_ID
 
 	generate_global_conf
+
+	logger "Reset SX1301"
+	reset_sx1301_board
+
 	logger "Starting LoRa packet forwarder"
 	procd_open_instance
 
