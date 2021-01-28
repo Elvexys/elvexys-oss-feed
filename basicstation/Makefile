@@ -10,7 +10,7 @@ include $(TOPDIR)/rules.mk
 PKG_NAME:=basicstation
 PKG_VERSION:=2.0.5
 PKG_REV:=9bcdf0e12e4568e96011a3910e6d460ec9384f8c
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL=https://github.com/xueliu/basicstation.git
@@ -54,18 +54,16 @@ define Package/basicstation/install
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/station* $(1)/usr/sbin/
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/crc32 $(1)/usr/sbin/crc32
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/genkwcrcs $(1)/usr/sbin/genkwcrcs
-	$(INSTALL_BIN) ./files/uci2station $(1)/usr/sbin/uci2station
-	$(INSTALL_BIN) ./files/reset_sx1301 $(1)/usr/sbin/reset_sx1301
 
 	$(INSTALL_DIR) $(1)/etc/init.d
 	$(INSTALL_BIN) ./files/station.init $(1)/etc/init.d/station
 
 	$(INSTALL_DIR) $(1)/etc/config
 	$(INSTALL_DATA) ./files/station.config $(1)/etc/config/station
-
-	# temporally add a fix configuration file
-	$(INSTALL_DIR) $(1)/etc/station
-	$(INSTALL_DATA) ./files/station.conf $(1)/etc/station/station.conf
+	
+	$(INSTALL_CONF) ./files/station_EU868_2dBi_indoor.conf $(1)/etc/station
+	$(INSTALL_CONF) ./files/station_EU868_4dBi_outdoor.conf $(1)/etc/station
+	$(INSTALL_BIN)  ./files/99-basic-station-net-reload $(1)/etc/hotplug.d/net/99-basic-station-net-reload
 endef
 
 $(eval $(call BuildPackage,basicstation))
