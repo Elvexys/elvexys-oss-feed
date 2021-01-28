@@ -10,7 +10,7 @@ include $(TOPDIR)/rules.mk
 PKG_NAME:=basicstation
 PKG_VERSION:=2.0.5
 PKG_REV:=9bcdf0e12e4568e96011a3910e6d460ec9384f8c
-PKG_RELEASE:=2
+PKG_RELEASE:=3
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL=https://github.com/xueliu/basicstation.git
@@ -60,7 +60,8 @@ define Package/basicstation/install
 
 	$(INSTALL_DIR) $(1)/etc/config
 	$(INSTALL_DATA) ./files/station.config $(1)/etc/config/station
-	
+
+	$(INSTALL_DIR) $(1)/etc/station
 	$(INSTALL_CONF) ./files/station_EU868_2dBi_indoor.conf $(1)/etc/station
 	$(INSTALL_CONF) ./files/station_EU868_4dBi_outdoor.conf $(1)/etc/station
 	$(INSTALL_DIR) $(1)/etc/hotplug.d/net
