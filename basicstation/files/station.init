@@ -75,9 +75,9 @@ generate_conf()
 	fi
 
 	# Get LNS URI
-	LNA_URI=$(uci get station.tc.uri)
+	LNA_URI=$(uci get station.tc.uri 2> /dev/null)
 	# GET LNS Port
-	LNA_PORT=$(uci get station.tc.port)
+	LNA_PORT=$(uci get station.tc.port 2> /dev/null)
 
 	if [ -z "$LNA_URI" ] || [ -z "$LNA_PORT" ];
 	then
