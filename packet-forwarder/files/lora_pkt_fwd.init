@@ -104,7 +104,7 @@ start_service()
 
 	procd_set_param command $PROG
 
-	procd_set_param respawn
+	procd_set_param respawn 3600 5 0
 
 	procd_set_param stdout 0
 	procd_set_param stderr 1
