@@ -79,7 +79,7 @@ generate_conf()
 	# GET LNS Port
 	LNA_PORT=$(uci get station.tc.port)
 
-	if [ -z $LNA_URI ] || [ -z $LNA_PORT ];
+	if [ -z "$LNA_URI" ] || [ -z "$LNA_PORT" ];
 	then
 		logger "Basic station not configured, do not start it"
 		exit 1
