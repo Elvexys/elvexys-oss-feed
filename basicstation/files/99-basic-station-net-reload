@@ -1,0 +1,6 @@
+#!/bin/sh
+
+[ "$ACTION" = add ] && {
+  logger -t basicstation-hotplug "Restarting basicstation due to net change"
+  /etc/init.d/station restart
+} 
