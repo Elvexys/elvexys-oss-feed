@@ -127,8 +127,3 @@ start_service()
 
 	procd_close_instance
 }
-
-stop_service() {
-	logger "Basicstation: Stop"
-	killall station
-}
