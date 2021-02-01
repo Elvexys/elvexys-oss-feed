@@ -64,7 +64,7 @@ generate_global_conf()
 	if [ -z "$SRV_ADDR" ]
 	then
 		logger "packet forwarder not configured, do not start it"
-		exit 1
+		return 1
 	else
 		gen_lora_global_conf
 	fi
@@ -94,7 +94,7 @@ start_service()
 
 	set_gateway_ID
 
-	generate_global_conf
+	generate_global_conf || return 1
 
 	logger "Reset SX1301"
 	reset_sx1301_board
