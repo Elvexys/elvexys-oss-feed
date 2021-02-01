@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=packet-forwarder
 PKG_VERSION:=3.1.0-wifx
-PKG_RELEASE:=3
+PKG_RELEASE:=4
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/packet_forwarder-$(PKG_VERSION)
 PKG_SOURCE:=v$(PKG_VERSION).tar.gz
