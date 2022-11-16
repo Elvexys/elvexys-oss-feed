@@ -1,0 +1,6 @@
+#!/bin/sh
+
+[ "$ACTION" = add ] && {
+  logger -t pkt-fwd-hotplug "Restarting pkt-forwader due to net change"
+  /etc/init.d/lora_pkt_fwd restart
+} 

@@ -20,6 +20,12 @@ PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION)-$(PKG_REV).tar.gz
 PKG_MAINTAINER:=Xue Liu <liuxuenetmail@gmail>
 PKG_LICENSE:=BSD
 
+ifeq ($(SUBTARGET),wifx_l1)
+  HW_FOLDER:=wifx_l1
+else
+  HW_FOLDER:=lorix_one
+endif
+
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/cmake.mk
 
@@ -59,11 +65,11 @@ define Package/basicstation/install
 	$(INSTALL_BIN) ./files/station.init $(1)/etc/init.d/station
 
 	$(INSTALL_DIR) $(1)/etc/config
-	$(INSTALL_DATA) ./files/station.config $(1)/etc/config/station
+	$(INSTALL_DATA) ./files/$(HW_FOLDER)/station.config $(1)/etc/config/station
 
 	$(INSTALL_DIR) $(1)/etc/station
-	$(INSTALL_CONF) ./files/station_EU868_2dBi_indoor.conf $(1)/etc/station
-	$(INSTALL_CONF) ./files/station_EU868_4dBi_outdoor.conf $(1)/etc/station
+	$(INSTALL_CONF) -D ./files/$(HW_FOLDER)/station_*.conf $(1)/etc/station
+	
 	$(INSTALL_DIR) $(1)/etc/hotplug.d/net
 	$(INSTALL_BIN)  ./files/99-basic-station-net-reload $(1)/etc/hotplug.d/net/99-basic-station-net-reload
 endef

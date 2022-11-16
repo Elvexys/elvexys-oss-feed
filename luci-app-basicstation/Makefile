@@ -11,6 +11,12 @@ PKG_RELEASE:=1
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)
 
+ifeq ($(SUBTARGET),wifx_l1)
+  HW_FOLDER:=wifx_l1
+else
+  HW_FOLDER:=lorix_one
+endif
+
 include $(INCLUDE_DIR)/package.mk
 
 define Package/luci-app-basicstation
@@ -27,7 +33,8 @@ endef
 
 define Package/luci-app-basicstation/install
 	$(INSTALL_DIR) $(1)/
-	$(CP) ./files/* $(1)/
+	$(CP) ./files/global/* $(1)/
+	$(CP) ./files/$(HW_FOLDER)/* $(1)/
 endef
 
 $(eval $(call BuildPackage,luci-app-basicstation))

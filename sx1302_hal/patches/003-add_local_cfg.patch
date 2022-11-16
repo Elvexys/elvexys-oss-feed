@@ -1,0 +1,29 @@
+.../packet_forwarder/src/lora_pkt_fwd.c          | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/packet_forwarder/src/lora_pkt_fwd.c b/packet_forwarder/src/lora_pkt_fwd.c
+index 53661de77e..0ef3fed0fd 100644
+--- a/packet_forwarder/src/lora_pkt_fwd.c
++++ b/packet_forwarder/src/lora_pkt_fwd.c
+@@ -1431,6 +1431,7 @@ int main(int argc, char ** argv)
+     /* configuration file related */
+     const char defaut_conf_fname[] = JSON_CONF_DEFAULT;
+     const char * conf_fname = defaut_conf_fname; /* pointer to a string we won't touch */
++    char *local_cfg_path = "/etc/lora/local_conf.json"; /* contain node specific configuration, overwrite global parameters for parameters that are defined in both 
+ 
+     /* threads */
+     pthread_t thrid_up;
+@@ -1541,6 +1542,13 @@ int main(int argc, char ** argv)
+         if (x != 0) {
+             MSG("INFO: no debug configuration\n");
+         }
++        
++        if (access(local_cfg_path, R_OK) == 0) {
++            MSG("INFO: found local configuration file %s, parsing it\n", local_cfg_path);
++            MSG("INFO: redefined parameters will overwrite global parameters\n");
++            parse_SX130x_configuration(local_cfg_path);
++            parse_gateway_configuration(local_cfg_path);
++        }
+     } else {
+         MSG("ERROR: [main] failed to find any configuration file named %s\n", conf_fname);
+         exit(EXIT_FAILURE);

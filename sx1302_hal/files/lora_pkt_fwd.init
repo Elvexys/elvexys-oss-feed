@@ -4,11 +4,12 @@ STOP=10
 
 USE_PROCD=1
 
-PROG=/usr/sbin/station
-CONFIGFILE=/etc/station/station.conf
+PROG=/usr/sbin/lora_pkt_fwd
 
 reset_sx130x_board ()
 {
+	logger "Reset SX130x"
+
 	local pin=1
 
 	if [ -d "/sys/class/gpio/pioA${pin}" ]
@@ -35,12 +36,12 @@ set_gateway_ID()
 	GWID_BEGIN=$(ip link show eth0 | awk '/ether/ {print $2}' | awk -F\: '{print $1$2$3}')
 	GWID_END=$(ip link show eth0 | awk '/ether/ {print $2}' | awk -F\: '{print $4$5$6}')
 
-	uci set station.global.gateway_ID="$GWID_BEGIN$GWID_MIDFIX$GWID_END"
+	uci set lora-global.gateway_conf.gateway_ID="$GWID_BEGIN$GWID_MIDFIX$GWID_END"
 	uci commit
 	logger "gateway ID set to $GWID_BEGIN$GWID_MIDFIX$GWID_END"
 }
 
-generate_conf()
+generate_global_conf()
 {
 	logger "Checking frequency plan ..."
 	PRODUCT_MODEL=$(cat /sys/class/wifx/wgw-ec/product_model)
@@ -53,7 +54,7 @@ generate_conf()
 			logger "Product type detection fail ... defaulting to 863-870"
 			FREQ="863-870"
 		fi
-		if ! ls /etc/station/station_"$FREQ"_*dBi.conf 1> /dev/null 2>&1;
+		if ! ls /etc/lora/global_conf_"$FREQ"*.json 1> /dev/null 2>&1;
 		then
 			logger "No configuration file for $FREQ ... defaulting to 863-870"
 			FREQ="863-870"
@@ -65,7 +66,7 @@ generate_conf()
 			logger "Product type detection fail ... defaulting to EU868"
 			FREQ="EU868"
 		fi
-		if [ ! -e /etc/station/station_"$FREQ"_2dBi_indoor.conf ] || [ ! -e /etc/station/station_"$FREQ"_4dBi_outdoor.conf  ];
+		if [ ! -e /etc/lora/global_conf_"$FREQ"_2dBi_indoor.json ] || [ ! -e /etc/lora/global_conf_"$FREQ"_4dBi_outdoor.json ];
 		then
 			logger "No configuration file for $FREQ ... defaulting to EU868"
 			FREQ="EU868"
@@ -73,71 +74,56 @@ generate_conf()
 	fi
 
 	logger "Frequency plan configured to $FREQ"
-	uci set station.global.freq_plan="$FREQ"
+	uci set lora-global.global.freq_plan="$FREQ"
 	uci commit
 
-	logger "Apply station configuration ... "
-
-	# Get antenna type
-	ANT=$(uci get station.global.antenna)
-
-	# Find configuration file depending frequency and antenna
-	if [ -e /etc/station/station_"$FREQ"_"$ANT".conf ];
+	SRV_ADDR=$(uci get lora-global.gateway_conf.server_address 2> /dev/null)
+	if [ -z "$SRV_ADDR" ]
 	then
-		cp -f /etc/station/station_"$FREQ"_"$ANT".conf /etc/station/station.conf
-	else
-		logger "Unable to find configuration file for $ANT / $FREQ"
-	fi
-
-	# Get LNS URI
-	LNA_URI=$(uci get station.tc.uri 2> /dev/null)
-	# GET LNS Port
-	LNA_PORT=$(uci get station.tc.port 2> /dev/null)
-
-	if [ -z "$LNA_URI" ] || [ -z "$LNA_PORT" ];
-	then
-		logger "Basic station not configured, do not start it"
+		logger "packet forwarder not configured, do not start it"
 		return 1
 	else
-		echo "$LNA_URI":"$LNA_PORT" > /etc/station/tc.uri
-		# Auth file are managed by LuCi app
+		gen_lora_global_conf
 	fi
+
+	logger "Generate /etc/lora/local_conf.json"
+	logger "Generate /etc/lora/global_conf.json"
+
 }
 
 service_triggers()
 {
 	# Restart in case of network change
-	procd_add_reload_trigger "station" "network"
+	procd_add_reload_trigger "lora-global" "network"
 }
 
 reload_service()
 {
-	logger "Reload basic station service"
+	logger "Reload lora_pkg_fwd service"
 	# Explicitly restart service
 	stop
 	start
 }
 
-
 start_service()
 {
 
-	logger "Basicstation: Start"
 
 	set_gateway_ID
 
-	generate_conf || return 1
-
-	logger "Reset SX130x"
+	generate_global_conf || return 1
+    # probably no need as it is done inside sx1302 driver. But keep it in case of
 	reset_sx130x_board
 
+	logger "Starting LoRa packet forwarder"
 	procd_open_instance
-	procd_set_param command $PROG --home /etc/station
-	procd_set_param file ${CONFIGFILE}
-	procd_set_param file /etc/config/station
+
+	procd_set_param command $PROG
+	procd_append_param command -c /etc/lora/global_conf.json
+
 	procd_set_param respawn 3600 5 0
 
-	procd_set_param stdout 1
+	procd_set_param stdout 0
 	procd_set_param stderr 1
 
 	procd_close_instance

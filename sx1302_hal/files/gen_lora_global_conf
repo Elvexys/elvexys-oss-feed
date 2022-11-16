@@ -1,0 +1,68 @@
+#!/usr/bin/env lua
+
+json = require('JSON') -- from local
+uci = require('uci')
+require "uloop"
+require "ubus"
+
+x = uci.cursor()
+
+uloop.init()
+
+local conn = ubus.connect()
+if not conn then
+	error("Failed to connect to ubus")
+end
+
+
+local lora_global_ubus = conn:call("uci", "get", {config = "lora-global"})
+
+local lora_global_table = lora_global_ubus["values"]
+
+local lora_global = {}
+local gateway_conf = {}
+
+local lora_local_loc = "/etc/lora/local_conf.json"
+local lora_global_loc = "/etc/lora/global_conf.json"
+
+--
+-- global
+--
+if lora_global_table["global"] then
+	local freq_plan = lora_global_table["global"]["freq_plan"]
+	local antenna = lora_global_table["global"]["antenna"]
+	local lora_global_src = "/etc/lora/global_conf_"..freq_plan.."_"..antenna..".json"
+	os.execute("ln -fs "..lora_global_src.." "..lora_global_loc)
+else
+	error("UCI configuration has no item global, Please check your configuration")
+end
+
+--
+-- gateway_conf
+--
+if lora_global_table["gateway_conf"] then
+	for k, v in pairs(lora_global_table["gateway_conf"]) do
+		-- filter out internal uci options
+		if string.match(k, '%.[%a]*', 1) == nil then
+			if tonumber(v) then
+				gateway_conf[k] = tonumber(v)
+			elseif v == "true" then
+				gateway_conf[k] = true
+			elseif v == "false" then
+        		gateway_conf[k] = false
+			else
+				gateway_conf[k] = v
+			end
+		end
+	end
+else
+	error("UCI configuration has no item gateway_conf, Please check your configuration")
+end
+
+lora_global["gateway_conf"] = gateway_conf
+
+local pretty_json_text = json:encode_pretty(lora_global)
+
+local lora_local_file = assert(io.open(lora_local_loc, "w"))
+lora_local_file:write(pretty_json_text)
+lora_local_file:close()

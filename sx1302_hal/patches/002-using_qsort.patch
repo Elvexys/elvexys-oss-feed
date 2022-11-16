@@ -1,0 +1,83 @@
+diff --git a/libloragw/src/loragw_hal.c b/libloragw/src/loragw_hal.c
+index ffc8ec0f78..94d620483d 100644
+--- a/libloragw/src/loragw_hal.c
++++ b/libloragw/src/loragw_hal.c
+@@ -23,8 +23,7 @@ License: Revised BSD License, see LICENSE.TXT file include in the project
+     #define _XOPEN_SOURCE 500
+ #endif
+ 
+-#define _GNU_SOURCE     /* needed for qsort_r to be defined */
+-#include <stdlib.h>     /* qsort_r */
++#include <stdlib.h>
+ 
+ #include <stdint.h>     /* C99 types */
+ #include <stdbool.h>    /* bool type */
+@@ -323,7 +322,6 @@ static int merge_packets(struct lgw_pkt_rx_s * p, uint8_t * nb_pkt) {
+     int pkt_idx;
+ #endif
+     bool dup_restart = false;
+-    int counter_qsort_swap = 0;
+ 
+     /* Check input parameters */
+     CHECK_NULL(p);
+@@ -417,8 +415,8 @@ static int merge_packets(struct lgw_pkt_rx_s * p, uint8_t * nb_pkt) {
+     }
+ 
+     /* Sort the packet array by ascending counter_us value */
+-    qsort_r(p, cpt, sizeof(p[0]), compare_pkt_tmst, &counter_qsort_swap);
+-    DEBUG_PRINTF("%d elements swapped during sorting...\n", counter_qsort_swap);
++    qsort(p, cpt, sizeof(p[0]), compare_pkt_tmst);
++    DEBUG_MSG("sorting packet array done...\n");
+ 
+     /* --------------------------------------------- */
+     /* ---------- For Debug only - START ----------- */
+
+diff --git a/packet_forwarder/src/jitqueue.c b/packet_forwarder/src/jitqueue.c
+index ffc8ec0f78..94d620483d 100644
+===================================================================
+--- a/packet_forwarder/src/jitqueue.c
++++ b/packet_forwarder/src/jitqueue.c
+@@ -15,7 +15,6 @@ License: Revised BSD License, see LICENS
+ /* -------------------------------------------------------------------------- */
+ /* --- DEPENDANCIES --------------------------------------------------------- */
+ 
+-#define _GNU_SOURCE     /* needed for qsort_r to be defined */
+ #include <stdlib.h>     /* qsort_r */
+ #include <stdio.h>      /* printf, fprintf, snprintf, fopen, fputs */
+ #include <string.h>     /* memset, memcpy */
+@@ -88,32 +87,27 @@ void jit_queue_init(struct jit_queue_s *
+     pthread_mutex_unlock(&mx_jit_queue);
+ }
+ 
+-int compare(const void *a, const void *b, void *arg)
++int compare(const void *a, const void *b)
+ {
+     struct jit_node_s *p = (struct jit_node_s *)a;
+     struct jit_node_s *q = (struct jit_node_s *)b;
+-    int *counter = (int *)arg;
+     int p_count, q_count;
+ 
+     p_count = p->pkt.count_us;
+     q_count = q->pkt.count_us;
+ 
+-    if (p_count > q_count)
+-        *counter = *counter + 1;
+-
+     return p_count - q_count;
+ }
+ 
+ void jit_sort_queue(struct jit_queue_s *queue) {
+-    int counter = 0;
+ 
+     if (queue->num_pkt == 0) {
+         return;
+     }
+ 
+     MSG_DEBUG(DEBUG_JIT, "sorting queue in ascending order packet timestamp - queue size:%u\n", queue->num_pkt);
+-    qsort_r(queue->nodes, queue->num_pkt, sizeof(queue->nodes[0]), compare, &counter);
+-    MSG_DEBUG(DEBUG_JIT, "sorting queue done - swapped:%d\n", counter);
++    qsort(queue->nodes, queue->num_pkt, sizeof(queue->nodes[0]), compare);
++    MSG_DEBUG(DEBUG_JIT, "sorting queue done - swapped\n");
+ }
+ 
+ bool jit_collision_test(uint32_t p1_count_us, uint32_t p1_pre_delay, uint32_t p1_post_delay, uint32_t p2_count_us, uint32_t p2_pre_delay, uint32_t p2_post_delay) {
