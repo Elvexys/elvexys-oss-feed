@@ -13,29 +13,43 @@
         "antenna_gain_desc": "antenna gain, in dBi. Do not modify",
         "com_type": "SPI",
         "com_path": "/dev/spidev0.0",
+        "full_duplex": false,
         "radio_0": {
             "enable": true,
             "type": "SX1250",
             "freq": 867500000,
             "rssi_offset": -215.4,
-            "rssi_tcomp": {
-                "coeff_a": 0, 
-                "coeff_b": 0, 
-                "coeff_c": 20.41, 
-                "coeff_d": 2162.56, 
-                "coeff_e": 0
-            },
+            "rssi_tcomp": {"coeff_a": 0, "coeff_b": 0, "coeff_c": 20.41, "coeff_d": 2162.56, "coeff_e": 0},
             "tx_enable": true,
             "tx_notch_freq": 129000,
             "tx_notch_freq_desc": "[126..250] KHz",
             "tx_freq_min": 863000000,
-            "tx_freq_max": 870000000
+            "tx_freq_max": 870000000,
+            "tx_gain_lut": [
+                { "rf_power": 12, "pa_gain": 0, "pwr_idx":  7 },
+                { "rf_power": 13, "pa_gain": 0, "pwr_idx":  8 },
+                { "rf_power": 14, "pa_gain": 0, "pwr_idx":  9 },
+                { "rf_power": 15, "pa_gain": 0, "pwr_idx": 10 },
+                { "rf_power": 16, "pa_gain": 0, "pwr_idx": 11 },
+                { "rf_power": 17, "pa_gain": 0, "pwr_idx": 12 },
+                { "rf_power": 18, "pa_gain": 0, "pwr_idx": 13 },
+                { "rf_power": 19, "pa_gain": 0, "pwr_idx": 14 },
+                { "rf_power": 20, "pa_gain": 0, "pwr_idx": 15 },
+                { "rf_power": 21, "pa_gain": 0, "pwr_idx": 16 },
+                { "rf_power": 22, "pa_gain": 0, "pwr_idx": 18 },
+                { "rf_power": 23, "pa_gain": 0, "pwr_idx": 19 },
+                { "rf_power": 24, "pa_gain": 1, "pwr_idx":  0 },
+                { "rf_power": 25, "pa_gain": 1, "pwr_idx":  1 },
+                { "rf_power": 26, "pa_gain": 1, "pwr_idx":  2 },
+                { "rf_power": 27, "pa_gain": 1, "pwr_idx":  3 }
+              ]
         },
         "radio_1": {
             "enable": true,
             "type": "SX1250",
             "freq": 868500000,
             "rssi_offset": -215.4,
+            "rssi_tcomp": {"coeff_a": 0, "coeff_b": 0, "coeff_c": 20.41, "coeff_d": 2162.56, "coeff_e": 0},
             "tx_enable": false
         },
         "chan_multiSF_0": {
